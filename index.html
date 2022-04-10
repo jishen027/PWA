@@ -111,7 +111,28 @@
       </div>
     </form>
   </div>
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDqUAo0Q9FGrGieLEld4l8Vp1aWg-I8u74",
+      authDomain: "food-pwa-3220a.firebaseapp.com",
+      projectId: "food-pwa-3220a",
+      storageBucket: "food-pwa-3220a.appspot.com",
+      messagingSenderId: "564774736119",
+      appId: "1:564774736119:web:191c1a7e1b64b20b4dc3f2"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = firebase.firestore()
+  </script>
   <script src="/js/app.js"></script>
+  <script src="/js/db.js"></script>
   <script src="/js/ui.js"></script>
 </body>
 
