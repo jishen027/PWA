@@ -45,7 +45,7 @@
 
   <!-- recipes -->
   <div class="recipes container grey-text text-darken-1">
-    
+
   </div>
 
   <div class="center">
@@ -76,7 +76,7 @@
   <script type="module">
     // Import the functions you need from the SDKs you need
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-    import { getFirestore, collection, getDocs, onSnapshot, doc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, onSnapshot, doc, enableIndexedDbPersistence, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
     // TODO: Add SDKs for Firebase products that you want to use
     // https://firebase.google.com/docs/web/setup#available-libraries
@@ -95,6 +95,15 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore()
 
+    enableIndexedDbPersistence(db)
+      .catch(err => {
+        if (err.code == 'failed-precondition') {
+          console.log('persistence failed')
+        }
+        if (err.code == 'unimplemented') {
+          console.log('persistence is not available')
+        }
+      })
 
     const colRef = collection(db, 'recipes')
     const realtimeCol = onSnapshot(colRef, (snapshot) => {
@@ -105,10 +114,42 @@
         }
         if (change.type == 'removed') {
           // remove the document data from the web page
+          removeRecipe(change.doc.id)
         }
       });
     })
 
+    // add new recipe
+    const form = document.querySelector('form')
+    form.addEventListener('submit', (e) => {
+      e.preventDefault()
+      const recipe = {
+        title: form.title.value,
+        ingredients: form.ingredients.value
+      }
+      addDoc(colRef, recipe)
+        .then((res) => {
+          form.reset()
+        }).catch(err => {
+          console.log(err.message)
+        })
+    })
+
+    // delete a recipe
+    const recipesContainer = document.querySelector('.recipes')
+    recipesContainer.addEventListener('click', (e) => {
+      e.preventDefault()
+      if (e.target.tagName === 'I') {
+        const id = e.target.getAttribute('data-id')
+        const refDoc = doc(db, 'recipes', id)
+        deleteDoc(refDoc)
+          .then((res) => {
+            console.log('delete success')
+          }).catch(err=>{
+            console.log(err.message)
+          })
+      }
+    })
   </script>
   <script src="/js/app.js"></script>
 

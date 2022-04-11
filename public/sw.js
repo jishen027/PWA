@@ -1,6 +1,6 @@
-const staticCacheName = 'site-static-v1'
+const staticCacheName = 'site-static-v6'
 
-const dynamicCacheName = 'site-dynamic-cache-v4'
+const dynamicCacheName = 'site-dynamic-cache-v8'
 // store request url and get resource and store in cache
 const assets = [
   '/',
@@ -60,26 +60,29 @@ self.addEventListener("activate", event => {
 // sw can response from cache
 // offline actions
 self.addEventListener('fetch', event => {
-  // event.respondWith(
-  //   // look for cache if the page exist
-  //   caches.match(event.request).then(cacheRes => {
-  //     // if cache has the resource then return the resource
-  //     // if don't have this it will try to fetch resource from server
-  //     return cacheRes || fetch(event.request).then(fetchRes => {
-  //       return caches.open(dynamicCacheName).then(cache => {
-  //         // cache.put() will get resource from cache not from server
-  //         cache.put(event.request.url, fetchRes.clone())
-  //         // check cache size
-  //         limitCacheSize(dynamicCacheName, 2)
-  //         return fetchRes
-  //       })
-  //     })
-  //   }).catch(() => {
-  //     if (event.request.url.indexOf('.html') > -1) {
-  //       return caches.match('/pages/fallback.html')
-  //     }
-  //   })
-  // )
+  if (event.request.url.indexOf('firestore.googleapis.com') === -1) {
+    event.respondWith(
+      // look for cache if the page exist
+      caches.match(event.request).then(cacheRes => {
+        // if cache has the resource then return the resource
+        // if don't have this it will try to fetch resource from server
+        return cacheRes || fetch(event.request).then(fetchRes => {
+          return caches.open(dynamicCacheName).then(cache => {
+            // cache.put() will get resource from cache not from server
+            cache.put(event.request.url, fetchRes.clone())
+            // check cache size
+            limitCacheSize(dynamicCacheName, 2)
+            return fetchRes
+          })
+        })
+      }).catch(() => {
+        if (event.request.url.indexOf('.html') > -1) {
+          return caches.match('/pages/fallback.html')
+        }
+      })
+    )
+  }
+
 })
 
 
